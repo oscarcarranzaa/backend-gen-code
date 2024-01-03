@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enviar Datos por POST en Formato JSON</title>
+    <link rel="stylesheet" href="/index.css" />
+  </head>
+  <body>
+    <div class="formulario">
+      <div>
+        <h1>Formulario de código</h1>
+        <form id="miFormulario">
+          <input
+            type="text"
+            id="ID"
+            placeholder="IDJSON"
+            required
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            id="name"
+            placeholder="Nombre"
+            required
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            id="variation"
+            placeholder="Variacion"
+            required
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            id="code"
+            placeholder="Codigo"
+            required
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            id="amount"
+            placeholder="Cantidad"
+            required
+            autocomplete="off"
+          />
+          <button type="button" onclick="enviarDatos()">Enviar</button>
+        </form>
+        <form><input type="file" accept=""</form>
+      </div>
+    </div>
+
+    <script>
+      function enviarDatos() {
+        // Obtener el valor del input por su ID
+        var inputNameValue = document.getElementById("name").value;
+        var inputIdValue = document.getElementById("ID").value;
+        var inputCodeValue = document.getElementById("code").value;
+        var inputVariationValue = document.getElementById("variation").value;
+        var inputAmountValue = document.getElementById("amount").value;
+        if (
+          inputNameValue &&
+          inputIdValue &&
+          inputVariationValue &&
+          inputCodeValue &&
+          inputAmountValue != ""
+        ) {
+          var datos = {
+            name: inputNameValue,
+            id: inputIdValue,
+            variation: inputVariationValue,
+            amount: inputAmountValue,
+            code: inputCodeValue,
+          };
+
+          // Realizar la solicitud POST utilizando la API Fetch y enviar los datos en formato JSON
+          fetch("http://localhost:4000/codepost", {
+            method: "POST",
+            body: JSON.stringify(datos),
+            headers: {
+              // Especificar que el contenido es de tipo JSON
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // Manejar la respuesta del servidor
+              document.getElementById("code").value = "";
+              console.log("Respuesta del servidor:", data);
+            })
+            .catch((error) => {
+              console.error("Error al realizar la solicitud:", error);
+            });
+        }
+      }
+    </script>
+  </body>
+</html>
