@@ -17,7 +17,9 @@ export const uploadXlsx = (req, res) => {
     const filterData = jsonData.filter((e) => e.Codigo !== undefined);
     const mapJson = filterData.map((e) => ({
       ...e,
+      Codigo: String(e.Codigo),
       lote: lot,
+      succes: false,
     }));
     fs.writeFile(filePath, JSON.stringify(mapJson, null, 2), "utf8")
       .then(() => {

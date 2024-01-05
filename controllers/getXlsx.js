@@ -84,11 +84,13 @@ export const getOneXlsx = (req, res) => {
         const content = await fs.readFile(route, "utf8");
         const dataJson = JSON.parse(content);
         const indexPosition = dataJson.findIndex(function (obj) {
-          return obj.Codigo === code;
+          return obj.Codigo == code;
         });
-        const nextPaginate = Math.ceil(Number(indexPosition + 2) / 10);
-        const prevPaginate = Math.ceil(Number(indexPosition) / 10);
-
+        function nextPage(sum) {
+          const cal = Math.ceil(Number(indexPosition + sum) / 10);
+          const totalPages = Math.ceil(dataJson.length / 10);
+          return cal == 0 || cal > totalPages ? false : cal;
+        }
         const prevObject =
           indexPosition > 0 ? dataJson[indexPosition - 1].Codigo : false;
 
@@ -107,8 +109,8 @@ export const getOneXlsx = (req, res) => {
           ...findOneObject,
           nextCode: nextObject,
           prevCode: prevObject,
-          nextPaginate,
-          prevPaginate,
+          nextPaginate: nextPage(2),
+          prevPaginate: nextPage(0),
         });
       } else {
         console.log("El Objeto no fue encontrado", fileName);
