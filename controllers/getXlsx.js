@@ -70,7 +70,6 @@ export const getOneXlsx = (req, res) => {
   const code = req.query.code;
   const xlsxId = req.query.id;
   const fileName = xlsxId + ".json";
-  console.log("hola");
   async function readOneObject() {
     try {
       // Lee el contenido del directorio
@@ -84,11 +83,33 @@ export const getOneXlsx = (req, res) => {
         // Lee el contenido del archivo JSON
         const content = await fs.readFile(route, "utf8");
         const dataJson = JSON.parse(content);
-        const findOneObject = dataJson.find(function (get) {
-          console.log(get.Codigo == code);
-          return get.Codigo == code;
+        const indexPosition = dataJson.findIndex(function (obj) {
+          return obj.Codigo === code;
         });
-        res.json(findOneObject);
+        const nextPaginate = Math.ceil(Number(indexPosition + 2) / 10);
+        const prevPaginate = Math.ceil(Number(indexPosition) / 10);
+
+        const prevObject =
+          indexPosition > 0 ? dataJson[indexPosition - 1].Codigo : false;
+
+        const nextObject =
+          indexPosition < dataJson.length - 1
+            ? dataJson[indexPosition + 1].Codigo
+            : false;
+
+        const findOneObject = dataJson.find(function (get) {
+          return get.Codigo === code;
+        });
+        if (!findOneObject) {
+          res.json(undefined);
+        }
+        res.json({
+          ...findOneObject,
+          nextCode: nextObject,
+          prevCode: prevObject,
+          nextPaginate,
+          prevPaginate,
+        });
       } else {
         console.log("El Objeto no fue encontrado", fileName);
         res.status(404).end();

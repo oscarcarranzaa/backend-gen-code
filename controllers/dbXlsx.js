@@ -6,7 +6,6 @@ export const editOneObject = (req, res) => {
   const data = req.body;
   const IdXlsx = data.IdXlsx;
   const code = data.code;
-  const dataObject = data.data;
   const fileName = IdXlsx + ".json";
   const filePath = "public/xlsx/" + IdXlsx + ".json";
 
@@ -24,13 +23,20 @@ export const editOneObject = (req, res) => {
         // Lee el contenido del archivo JSON
         const content = await fs.readFile(route, "utf8");
         var dataJson = JSON.parse(content);
-        console.log(dataJson);
         const findOneObject = dataJson.findIndex(function (get) {
           return get.Codigo === code;
         });
         if (findOneObject !== -1) {
           // Editar los valores del objeto sin cambiar su posición en el array
-          dataJson[findOneObject] = dataObject;
+          const dataSerialize = () => ({
+            ...dataJson[findOneObject],
+            name: data.name,
+            model: data.model,
+            color: data.color,
+            succes: true,
+            edit: new Date(),
+          });
+          dataJson[findOneObject] = dataSerialize();
           fs.writeFile(filePath, JSON.stringify(dataJson, null, 2), "utf8")
             .then(() => {
               res.json(dataJson);

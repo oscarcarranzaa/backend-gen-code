@@ -14,7 +14,8 @@ export const uploadXlsx = (req, res) => {
     const workbook = xlsx.read(fileBuffer, { type: "buffer" });
     const sheetName = workbook.SheetNames[0];
     const jsonData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
-    const mapJson = jsonData.map((e) => ({
+    const filterData = jsonData.filter((e) => e.Codigo !== undefined);
+    const mapJson = filterData.map((e) => ({
       ...e,
       lote: lot,
     }));
