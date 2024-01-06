@@ -21,7 +21,8 @@ export const uploadXlsx = (req, res) => {
       lote: lot,
       succes: false,
     }));
-    fs.writeFile(filePath, JSON.stringify(mapJson, null, 2), "utf8")
+    const normalice = { title: filePath.split(/[./]/)[2], metadata: mapJson };
+    fs.writeFile(filePath, JSON.stringify(normalice, null, 2), "utf8")
       .then(() => {
         console.log(
           `Se generaron y guardaron ${mapJson.length} items en ${filePath}`

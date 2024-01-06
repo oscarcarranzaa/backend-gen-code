@@ -9,39 +9,36 @@ export const getXlsx = (req, res) => {
   const fileName = xlsxId + ".json";
 
   async function readJson() {
-    try {
-      // Lee el contenido del directorio
-      const file = await fs.readdir(pathRoot);
+    // Lee el contenido del directorio
+    const file = await fs.readdir(pathRoot);
 
-      // Busca el archivo por nombre
-      const findFile = file.find((arg) => arg === fileName);
+    // Busca el archivo por nombre
+    const findFile = file.find((arg) => arg === fileName);
 
-      if (findFile) {
-        const route = path.join(pathRoot, findFile);
+    if (findFile) {
+      const route = path.join(pathRoot, findFile);
 
-        // Lee el contenido del archivo JSON
-        const content = await fs.readFile(route, "utf8");
-        const dataJson = JSON.parse(content);
+      // Lee el contenido del archivo JSON
+      const content = await fs.readFile(route, "utf8");
+      const parseJson = JSON.parse(content);
+      const dataJson = parseJson.metadata;
 
-        // Aplicar paginación y clasificación si se proporcionan los parámetros
-        const { page = 1, limit = 10 } = req.query;
+      // Aplicar paginación y clasificación si se proporcionan los parámetros
+      const { page = 1, limit = 10 } = req.query;
 
-        let paginatedData = dataJson.slice((page - 1) * limit, page * limit);
+      let paginatedData = dataJson.slice((page - 1) * limit, page * limit);
 
-        // No hay campo de clasificación, se mantiene el orden original del JSON
-        res.json({
-          data: paginatedData,
-          totalItems: dataJson.length,
-          currentPage: +page,
-          totalPages: Math.ceil(dataJson.length / limit),
-        });
-      } else {
-        console.log("Archivo no encontrado:", fileName);
-        res.status(404).end();
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
+      // No hay campo de clasificación, se mantiene el orden original del JSON
+      res.json({
+        title: parseJson.title,
+        data: paginatedData,
+        totalItems: dataJson.length,
+        currentPage: +page,
+        totalPages: Math.ceil(dataJson.length / limit),
+      });
+    } else {
+      console.log("Archivo no encontrado:", fileName);
+      res.status(404).end();
     }
   }
 
@@ -82,7 +79,8 @@ export const getOneXlsx = (req, res) => {
 
         // Lee el contenido del archivo JSON
         const content = await fs.readFile(route, "utf8");
-        const dataJson = JSON.parse(content);
+        const parseJson = JSON.parse(content);
+        const dataJson = parseJson.metadata;
         const indexPosition = dataJson.findIndex(function (obj) {
           return obj.Codigo == code;
         });

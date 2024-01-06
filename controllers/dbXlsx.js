@@ -23,7 +23,8 @@ export const editOneObject = (req, res) => {
 
         // Lee el contenido del archivo JSON
         const content = await fs.readFile(route, "utf8");
-        var dataJson = JSON.parse(content);
+        const parseJson = JSON.parse(content);
+        var dataJson = parseJson.metadata;
         const findOneObject = dataJson.findIndex(function (get) {
           return get.Codigo === code;
         });
@@ -38,7 +39,8 @@ export const editOneObject = (req, res) => {
             edit: new Date(),
           });
           dataJson[findOneObject] = dataSerialize();
-          fs.writeFile(filePath, JSON.stringify(dataJson, null, 2), "utf8")
+          const normalice = { title: parseJson.title, metadata: dataJson };
+          fs.writeFile(filePath, JSON.stringify(normalice, null, 2), "utf8")
             .then(() => {
               res.json(dataJson);
             })
@@ -77,7 +79,8 @@ export const deleteOneObject = (req, res) => {
 
         // Lee el contenido del archivo JSON
         const content = await fs.readFile(route, "utf8");
-        var dataJson = JSON.parse(content);
+        const parseJson = JSON.parse(content);
+        var dataJson = parseJson.metadata;
         console.log(content);
         console.log(dataJson);
         const deleteObject = dataJson.filter(function (get) {
@@ -108,7 +111,6 @@ export const playObject = (req, res) => {
   const data = req.body;
   const IdXlsx = data.IdXlsx;
   const fileName = IdXlsx + ".json";
-  const filePath = "public/xlsx/" + IdXlsx + ".json";
 
   async function playObj() {
     try {
@@ -123,7 +125,8 @@ export const playObject = (req, res) => {
 
         // Lee el contenido del archivo JSON
         const content = await fs.readFile(route, "utf8");
-        var dataJson = JSON.parse(content);
+        const parseJson = JSON.parse(content);
+        var dataJson = parseJson.metadata;
 
         const newData = dataJson.flatMap((d) => {
           const cantidadItems = d["(pcs)"]; // Puedes ajustar este valor según la cantidad deseada
@@ -144,7 +147,7 @@ export const playObject = (req, res) => {
           return items;
         });
         const csvWriter = createObjectCsvWriter({
-          path: pathRoot + IdXlsx + ".csv",
+          path: "public/db-csv/" + IdXlsx + ".csv",
           header: [
             { id: "nombre", title: "Nombre" },
             { id: "model", title: "Modelo" },
